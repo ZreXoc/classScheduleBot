@@ -1,0 +1,10 @@
+# go-cqhttp
+config.yml
+data
+logs
+node_modules
+go-*
+session.token
+
+.env
+classes.csv

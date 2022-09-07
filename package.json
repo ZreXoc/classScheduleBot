@@ -1,0 +1,21 @@
+{
+  "name": "qqBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js",
+    "temp": "node ./schedule.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^5.3.0",
+    "dotenv": "^16.0.2",
+    "node-schedule": "^2.1.0",
+    "ws": "^8.8.1"
+  }
+}
