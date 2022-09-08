@@ -43,18 +43,24 @@ ws.on("open", () => {
     const msg = data["raw_message"];
 
     if (msg.match(/今[天日](.*)(什么课|课表)/)) {
-      sendMsg(`今日课表: ${classes[date.getDay() - 1].join(" ")}`);
+      sendMsg(`今日课表: ${classes[(date.getDay() - 1) % 7].join(" ")}`);
       return;
     }
     if (msg.match(/明[天日](.*)(什么课|课表)/)) {
       sendMsg(`明日课表: ${classes[date.getDay() % 7].join(" ")}`);
       return;
     }
+    if (msg.match(/后[天日](.*)(什么课|课表)/)) {
+      sendMsg(`后天课表: ${classes[(date.getDay() + 1) % 7].join(" ")}`);
+      return;
+    }
     const idxOfNextClass = times.findIndex(
         (t) => parseTime(t).getTime() > date.getTime()
       ),
-      idxOfCurrentClass = idxOfNextClass - 1;
+      idxOfCurrentClass =
+        idxOfNextClass === -1 ? times.length - 1 : idxOfNextClass - 1;
     if (msg.match(/什么课/)) {
+      if (idxOfNextClass === -1) return sendMsg("已经是最后一节课来了！");
       sendMsg(
         `这节是${classes[date.getDay() - 1][idxOfNextClass - 1]}(${
           times[idxOfNextClass - 1]
