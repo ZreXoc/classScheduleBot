@@ -1,12 +1,18 @@
+import * as fs from 'fs'
 import * as dotenv from "dotenv";
 import schedule from "node-schedule";
 import { WebSocket } from "ws";
-import mySchedule, { classes, times } from "./schedule.js";
-import { nextClass, parseTime, toTime } from "./util.js";
+import { fromCSV, parseTime, toTime } from "./util.js";
 
 dotenv.config();
-
 const { HTTP_HOST, WS_HOST, GROUP_ID } = process.env;
+
+const file = fs.readFileSync("./classes.csv");
+const {
+  data: { times, classes },
+  schedule: mySchedule,
+} = fromCSV(file);
+console.log(mySchedule);
 
 const sendMsg = (message) =>
   fetch(HTTP_HOST, {

@@ -20,7 +20,7 @@ export const toTime = (date) =>
  * @param {{time:string}} param1
  * @returns
  */
-export const nextClass = (className) => `下节是${className}`;
+export const nextClass = (className) => `下节是${className}，还有2分钟`;
 
 /**
  *
@@ -37,6 +37,8 @@ export const classOver = (className) => `${className}已经下课了!`;
  * @returns
  */
 export const day = (dayOfWeek, times, classes) => {
+  const MIN_PER_CLASS = +process.env.MIN_PER_CLASS || 40;
+
   const schedule = [
     {
       time: `0 15 7 * * ${dayOfWeek}`,
@@ -45,16 +47,20 @@ export const day = (dayOfWeek, times, classes) => {
   ];
   times.forEach((time, idx) => {
     const d = parseTime(time),
+      twoMinBeforeCurrentClass = new Date(),
       timeOfClassOver = new Date();
 
-    timeOfClassOver.setTime(d.getTime() + 40 * 60 * 1000);
+    twoMinBeforeCurrentClass.setTime(d.getTime() - 2 * 60 * 1000);
+    timeOfClassOver.setTime(d.getTime() + MIN_PER_CLASS * 60 * 1000);
+
+    schedule.push({
+      time: `0 ${twoMinBeforeCurrentClass.getMinutes()} ${twoMinBeforeCurrentClass.getHours()} * * ${dayOfWeek}`,
+      message: nextClass(classes[idx]),
+    });
 
     schedule.push({
       time: `0 ${timeOfClassOver.getMinutes()} ${timeOfClassOver.getHours()} * * ${dayOfWeek}`,
-      // message: nextClass(classes[idx], { time }),
-      message:
-        classOver(classes[idx]) +
-        (classes[idx + 1] ? `\n${nextClass(classes[idx + 1])}` : ""),
+      message: classOver(classes[idx]),
     });
   });
   return schedule;
@@ -82,6 +88,6 @@ export const fromCSV = (data) => {
       times,
       classes,
     },
-    schedule: week(times, classes),
+    schedule: week(times, classes).flat(),
   };
 };
